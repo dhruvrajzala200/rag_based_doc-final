@@ -193,6 +193,15 @@ st.markdown("""
 st.markdown("<h1 class='main-header'>📄 Document Intelligence System</h1>", unsafe_allow_html=True)
 st.caption(f"Engine: Ollama (`{llm_model}`) | Vector Model: (`{embed_model}`)")
 
+# Check if Ollama endpoint is reachable
+is_ollama_online = rag_engine.check_connection()
+if not is_ollama_online:
+    st.warning(
+        f"⚠️ **Cannot connect to Ollama** at `{ollama_endpoint}`.\n\n"
+        "If you are running on **Streamlit Cloud**, `http://localhost:11434` cannot connect to your laptop directly. "
+        "Please expose your local Ollama port via Ngrok (`ngrok http 11434`) and enter your public URL (e.g. `https://xxxx.ngrok-free.app`) in the sidebar."
+    )
+
 # Horizontal Main Navigation Bar
 workspace_tabs = [
     "🏠 Assistant Room",
@@ -459,20 +468,26 @@ elif st.session_state.active_tab == "📁 Document Manager":
     pdf_uploads = st.file_uploader("Upload PDF Documents (Automatic versioning supported)", type=["pdf"], accept_multiple_files=True)
     if pdf_uploads:
         if st.button("🚀 Process Uploads"):
-            with st.spinner("Processing document semantics and creating index..."):
-                for pdf in pdf_uploads:
-                    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp:
-                        temp.write(pdf.getvalue())
-                        temp_path = temp.name
-                    try:
-                        chunk_count = rag_engine.process_document(temp_path, pdf.name)
-                        st.success(f"Indexed **{pdf.name}** into {chunk_count} chunks!")
-                    except Exception as err:
-                        st.error(f"Error processing **{pdf.name}**: {err}")
-                    finally:
-                        if os.path.exists(temp_path):
-                            os.remove(temp_path)
-                st.rerun()
+            if not is_ollama_online:
+                st.error("❌ Ollama server is offline or unreachable. Please check your Ollama Endpoint URL in the sidebar before processing uploads.")
+            else:
+                has_error = False
+                with st.spinner("Processing document semantics and creating index..."):
+                    for pdf in pdf_uploads:
+                        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp:
+                            temp.write(pdf.getvalue())
+                            temp_path = temp.name
+                        try:
+                            chunk_count = rag_engine.process_document(temp_path, pdf.name)
+                            st.success(f"Indexed **{pdf.name}** into {chunk_count} chunks!")
+                        except Exception as err:
+                            has_error = True
+                            st.error(f"❌ Error processing **{pdf.name}**: {err}\n\nMake sure your Ollama URL is accessible.")
+                        finally:
+                            if os.path.exists(temp_path):
+                                os.remove(temp_path)
+                if not has_error:
+                    st.rerun()
 
     # Render Document Cards and Dynamic Features
     if available_docs:

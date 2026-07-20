@@ -125,6 +125,37 @@ In the **Document Manager** tab:
 
 ---
 
+## ☁️ Deployment Guide
+
+### Option 1: Streamlit Community Cloud (Free & Easy)
+
+1. **Push to GitHub**:
+   Upload your codebase (`app.py`, `rag_engine.py`, `requirements.txt`, `Dockerfile`, `.gitignore`, `README.md`) to a public or private GitHub repository.
+
+2. **Deploy on Streamlit Cloud**:
+   * Visit [share.streamlit.io](https://share.streamlit.io/).
+   * Click **New App**, connect your GitHub repo, select main branch, set `app.py` as the entry file, and click **Deploy**.
+
+3. **Expose Local Ollama Endpoint (for Cloud App Access)**:
+   Since Streamlit Cloud runs in the cloud, `http://localhost:11434` cannot connect to your laptop directly. Expose your local Ollama port via **Ngrok**:
+   ```bash
+   ngrok http 11434
+   ```
+   Copy the generated forwarding URL (e.g. `https://xxxx.ngrok-free.app`) and paste it into the **Ollama Endpoint URL** input box in your deployed app's sidebar!
+
+---
+
+### Option 2: Docker Container Deployment
+
+Build and run using Docker:
+```bash
+docker build -t rag-document-intelligence .
+docker run -p 8501:8501 rag-document-intelligence
+```
+
+---
+
 ## 📝 License
 
 This project is open-source and available under the [MIT License](LICENSE).
+

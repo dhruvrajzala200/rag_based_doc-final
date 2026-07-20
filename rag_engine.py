@@ -26,18 +26,35 @@ class RAGEngine:
         """Initializes the Ollama models and loads the persistent vector index."""
         self.llm_model = llm_model
         self.embed_model = embed_model
-        self.endpoint = endpoint if endpoint else "http://localhost:11434"
+        
+        # Normalize endpoint URL
+        if endpoint:
+            ep = endpoint.strip().rstrip("/")
+            if not ep.startswith("http://") and not ep.startswith("https://"):
+                ep = "https://" + ep
+            self.endpoint = ep
+        else:
+            self.endpoint = "http://localhost:11434"
+            
         self.temperature = temperature
+        
+        # Headers to bypass Ngrok browser warning page
+        request_headers = {
+            "ngrok-skip-browser-warning": "true",
+            "User-Agent": "Mozilla/5.0"
+        }
         
         self.embeddings = OllamaEmbeddings(
             model=self.embed_model,
-            base_url=self.endpoint
+            base_url=self.endpoint,
+            sync_client_kwargs={"headers": request_headers}
         )
 
         self.llm = ChatOllama(
             model=self.llm_model,
             temperature=self.temperature,
-            base_url=self.endpoint
+            base_url=self.endpoint,
+            sync_client_kwargs={"headers": request_headers}
         )
 
         # Vector store folder path based on the embedding model
@@ -63,6 +80,24 @@ class RAGEngine:
                 self.metadata = {}
         else:
             self.metadata = {}
+
+    def check_connection(self):
+        """Checks if the configured Ollama server endpoint is reachable."""
+        try:
+            import urllib.request
+            url = f"{self.endpoint}/api/tags"
+            req = urllib.request.Request(
+                url, 
+                headers={
+                    "ngrok-skip-browser-warning": "true",
+                    "User-Agent": "Mozilla/5.0"
+                }
+            )
+            with urllib.request.urlopen(req, timeout=5) as response:
+                return response.status == 200
+        except Exception as err:
+            print(f"Connection check failed for {self.endpoint}: {err}")
+            return False
 
     def get_documents_list(self):
         """Returns details for all active indexed documents."""
