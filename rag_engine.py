@@ -94,10 +94,11 @@ class RAGEngine:
                 }
             )
             with urllib.request.urlopen(req, timeout=5) as response:
-                return response.status == 200
+                if response.status == 200:
+                    return True, ""
+                return False, f"HTTP Status {response.status}"
         except Exception as err:
-            print(f"Connection check failed for {self.endpoint}: {err}")
-            return False
+            return False, str(err)
 
     def get_documents_list(self):
         """Returns details for all active indexed documents."""

@@ -194,12 +194,15 @@ st.markdown("<h1 class='main-header'>📄 Document Intelligence System</h1>", un
 st.caption(f"Engine: Ollama (`{llm_model}`) | Vector Model: (`{embed_model}`)")
 
 # Check if Ollama endpoint is reachable
-is_ollama_online = rag_engine.check_connection()
+is_ollama_online, conn_err = rag_engine.check_connection()
 if not is_ollama_online:
     st.warning(
         f"⚠️ **Cannot connect to Ollama** at `{ollama_endpoint}`.\n\n"
-        "If you are running on **Streamlit Cloud**, `http://localhost:11434` cannot connect to your laptop directly. "
-        "Please expose your local Ollama port via Ngrok (`ngrok http 11434`) and enter your public URL (e.g. `https://xxxx.ngrok-free.app`) in the sidebar."
+        f"**Diagnostic Error**: `{conn_err}`\n\n"
+        "**Troubleshooting Steps**:\n"
+        "1. **Is Ngrok active?** Keep `ngrok http 11434` running in your Command Prompt.\n"
+        "2. **Enable CORS on Ollama**: Set `OLLAMA_ORIGINS=\"*\"` in PowerShell (`$env:OLLAMA_ORIGINS=\"*\"`) before starting Ollama.\n"
+        "3. **Paste Complete URL**: Ensure the URL ends in `.ngrok-free.dev` or `.ngrok-free.app`."
     )
 
 # Horizontal Main Navigation Bar
