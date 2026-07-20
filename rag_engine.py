@@ -29,7 +29,7 @@ class RAGEngine:
         
         # Normalize endpoint URL
         if endpoint:
-            ep = endpoint.strip().rstrip("/")
+            ep = endpoint.strip().rstrip(".").rstrip("/")
             if not ep.startswith("http://") and not ep.startswith("https://"):
                 ep = "https://" + ep
             self.endpoint = ep

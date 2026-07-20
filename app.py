@@ -65,7 +65,8 @@ user_notes = read_json(USER_NOTES_PATH, {})
 with st.sidebar:
     st.markdown("<h2 style='color:#58a6ff;'>⚙️ Configuration</h2>", unsafe_allow_html=True)
     
-    ollama_endpoint = st.text_input("Ollama Endpoint URL", value="http://localhost:11434")
+    raw_endpoint = st.text_input("Ollama Endpoint URL", value="http://localhost:11434")
+    ollama_endpoint = raw_endpoint.strip().rstrip(".").rstrip("/")
     llm_model = st.selectbox("LLM Model", ["llama3.2", "llama3", "mistral", "gemma2"], index=0)
     embed_model = st.selectbox("Embedding Model", ["nomic-embed-text", "all-minilm"], index=0)
 
@@ -205,9 +206,9 @@ if not is_ollama_online:
         f"⚠️ **Cannot connect to Ollama** at `{ollama_endpoint}`.\n\n"
         f"**Diagnostic Error**: `{conn_err}`\n\n"
         "**Troubleshooting Steps**:\n"
-        "1. **Is Ngrok active?** Keep `ngrok http 11434` running in your Command Prompt.\n"
-        "2. **Enable CORS on Ollama**: Set `OLLAMA_ORIGINS=\"*\"` in PowerShell (`$env:OLLAMA_ORIGINS=\"*\"`) before starting Ollama.\n"
-        "3. **Paste Complete URL**: Ensure the URL ends in `.ngrok-free.dev` or `.ngrok-free.app`."
+        "1. **Is Cloudflare Tunnel Active?** Ensure `npx cloudflared tunnel --url http://localhost:11434` is running in your Command Prompt.\n"
+        "2. **Enable CORS on Ollama**: Set `OLLAMA_ORIGINS=\"*\"` in PowerShell (`$env:OLLAMA_ORIGINS=\"*\"`) before launching Ollama.\n"
+        "3. **Paste Complete Cloudflare URL**: Copy the URL ending in `.trycloudflare.com` without any trailing period."
     )
 
 # Horizontal Main Navigation Bar
