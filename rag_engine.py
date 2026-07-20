@@ -38,10 +38,12 @@ class RAGEngine:
             
         self.temperature = temperature
         
-        # Headers to bypass Ngrok browser warning page
+        # Headers to bypass tunnel warnings and Ollama CORS restrictions
         request_headers = {
             "ngrok-skip-browser-warning": "true",
-            "User-Agent": "Mozilla/5.0"
+            "User-Agent": "Mozilla/5.0",
+            "Host": "localhost:11434",
+            "Origin": "http://localhost:11434"
         }
         
         self.embeddings = OllamaEmbeddings(
@@ -91,7 +93,9 @@ class RAGEngine:
                 timeout=5,
                 headers={
                     "ngrok-skip-browser-warning": "true",
-                    "User-Agent": "Mozilla/5.0"
+                    "User-Agent": "Mozilla/5.0",
+                    "Host": "localhost:11434",
+                    "Origin": "http://localhost:11434"
                 }
             )
             if response.status_code in (200, 403):
