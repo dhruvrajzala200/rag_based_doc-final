@@ -194,7 +194,12 @@ st.markdown("<h1 class='main-header'>📄 Document Intelligence System</h1>", un
 st.caption(f"Engine: Ollama (`{llm_model}`) | Vector Model: (`{embed_model}`)")
 
 # Check if Ollama endpoint is reachable
-is_ollama_online, conn_err = rag_engine.check_connection()
+conn_result = rag_engine.check_connection()
+if isinstance(conn_result, tuple):
+    is_ollama_online, conn_err = conn_result
+else:
+    is_ollama_online, conn_err = bool(conn_result), "Unreachable endpoint"
+
 if not is_ollama_online:
     st.warning(
         f"⚠️ **Cannot connect to Ollama** at `{ollama_endpoint}`.\n\n"
