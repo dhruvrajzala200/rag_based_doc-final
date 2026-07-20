@@ -1,0 +1,32 @@
+# Python Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python Byte-Compiled and Cache Files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Environment Variables & Secret Files
+.env
+.env.local
+.env.*.local
+
+# Local Application Data & Vector Indexes
+vectorstore/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Text Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
