@@ -84,19 +84,19 @@ class RAGEngine:
     def check_connection(self):
         """Checks if the configured Ollama server endpoint is reachable."""
         try:
-            import urllib.request
+            import requests
             url = f"{self.endpoint}/api/tags"
-            req = urllib.request.Request(
+            response = requests.get(
                 url, 
+                timeout=5,
                 headers={
                     "ngrok-skip-browser-warning": "true",
                     "User-Agent": "Mozilla/5.0"
                 }
             )
-            with urllib.request.urlopen(req, timeout=5) as response:
-                if response.status == 200:
-                    return True, ""
-                return False, f"HTTP Status {response.status}"
+            if response.status_code in (200, 403):
+                return True, ""
+            return False, f"HTTP {response.status_code}"
         except Exception as err:
             return False, str(err)
 

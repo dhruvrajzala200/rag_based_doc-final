@@ -54,6 +54,8 @@ if "run_query" not in st.session_state:
     st.session_state.run_query = False
 if "active_tab" not in st.session_state:
     st.session_state.active_tab = "🏠 Assistant Room"
+if "endpoint" not in st.session_state:
+    st.session_state.endpoint = "http://localhost:11434"
 if "processed_audio_hashes" not in st.session_state:
     st.session_state.processed_audio_hashes = set()
 
@@ -65,8 +67,8 @@ user_notes = read_json(USER_NOTES_PATH, {})
 with st.sidebar:
     st.markdown("<h2 style='color:#58a6ff;'>⚙️ Configuration</h2>", unsafe_allow_html=True)
     
-    raw_endpoint = st.text_input("Ollama Endpoint URL", value="http://localhost:11434")
-    ollama_endpoint = raw_endpoint.strip().rstrip(".").rstrip("/")
+    st.text_input("Ollama Endpoint URL", key="endpoint")
+    ollama_endpoint = st.session_state.endpoint.strip().rstrip(".").rstrip("/")
     llm_model = st.selectbox("LLM Model", ["llama3.2", "llama3", "mistral", "gemma2"], index=0)
     embed_model = st.selectbox("Embedding Model", ["nomic-embed-text", "all-minilm"], index=0)
 
